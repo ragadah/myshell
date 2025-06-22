@@ -1,0 +1,264 @@
+<help>
+
+Developers :
+>> Raghad Hilles 220210954
+>> Farah Abu Shaban 220210423
+>> Aya Ali 220213127
+
+Class : Operating Systems Project
+
+
+***********************************************************
+                       Overview
+***********************************************************
+
+MyShell is a custom command-line interpreter (CLI) developed as
+part of an Operating Systems project. 
+MyShell supports a variety of built-in commands, handles I/O 
+redirection, and can execute programs in the background.
+This shell is written in C and compiled using gcc, demonstrating 
+core concepts of process management, inter-process communication,
+and file I/O within a Unix-like environment.
+
+***********************************************************
+                       Features
+***********************************************************
+MyShell offers a range of functionalities designed to mimic a
+ basic Unix shell:
+
+Supported Commands
+MyShell includes several built-in commands and can also execute external programs:
+
+     cd         >>             Change the current default directory.
+     pwd        >>             Display the current working directory.
+     clr /clear >>             Clears the terminal screen.
+     dir        >>             Lists the contents of a specified directory.
+     environ    >>             Displays all environment strings.
+     echo       >>             Prints a comment or text to the display or output files.
+     help / ?   >>             Displays the user manual or specific help topics.
+     pause      >>             Pauses shell operation until the Enter key is pressed.
+     quit /exit >>             Terminates the shell.
+     myshell    >>              Used to execute commands from a batch file.
+
+External executable files can also be run directly by typing their name, similar to standard shells.
+
+
+
+***********************************************************
+                      Batch file support
+***********************************************************
+MyShell can process commands non-interactively from a batch file. If invoked with a command-line argument
+that is a file (e.g., myshell mycommands.bat), the shell will read and execute commands line by line from
+that file until the end of the file is reached, upon which the shell will exit. When invoked without arguments,
+MyShell runs in interactive mode.
+
+
+***********************************************************
+                      I/O Redirection
+***********************************************************
+MyShell supports input (<) and output (> or >>) redirection for both built-in
+commands and external programs.
+
+Input Redirection (<): Replaces the standard input (stdin) with the content of a specified file.
+Example: cd < path_file.txt (reads directory from file)
+Example: dir < directory_list.txt (reads directory to list from file)
+Example: echo < message.txt (displays content of message.txt)
+Output Redirection (>): Creates a new file or truncates an existing one, replacing standard output (stdout) with the command's output.
+Example: ls -l > file_list.txt
+Output Appending (>>): Creates a new file or appends to an existing one, adding the command's output to the end of the file.
+Example: environ >> my_env_vars.txt
+Note on Multiple Redirections: While the shell can parse multiple redirection tokens, only the last specified input or output file will
+take effect for a given command.
+
+
+
+***********************************************************
+                      Background Execution
+***********************************************************
+Commands can be executed in the background by appending an ampersand (&) at the end of the command line. This 
+allows the shell to return to the command prompt immediately, without waiting for the command to complete.
+
+Example: long_running_script.sh &
+Path Handling
+MyShell handles various path formats for files and directories:
+
+Absolute Paths: Paths starting with / (e.g., /home/user/document.txt).
+Relative Paths: Paths relative to the current working directory (e.g., my_folder/file.txt).
+Home Directory Shortcut: Paths starting with ~ are expanded to the user's home directory (e.g., ~/documents).
+
+
+***********************************************************
+                     Error Handling
+***********************************************************
+MyShell provides informative error messages for various issues, including:
+
+Command not found.
+Invalid arguments for built-in commands.
+Invalid I/O redirection syntax.
+File access errors (e.g., file not found, permission issues).
+Directory errors (e.g., directory not found).
+System errors (e.g., fork failure, getcwd failure).
+Exceeding maximum arguments or redirections.
+Help topic not found.
+Code Structure
+The project is primarily composed of myshell.c (or main.c) and utility.c.
+
+myshell.h: Contains global constants, data structure definitions (ShellRedirectInfo), error codes,
+and function prototypes. It also declares global state variables (is_batch_mode, current_batch_file,
+batch_line_number) that manage the shell's operational context.
+utility.c: Implements the core logic for command parsing (parseCommandLine), command execution 
+(executeCommandLine, executeSingleCommand), and handlers for all built-in commands (e.g., handleCdCommand,
+ handleEchoCommand). It also includes utility functions for error reporting, path manipulation, and shell delays.
+
+
+**************** Help for each command **************************
+****************
+
+<help cd>
+
+Format:    cd [directory]
+=> change the current default directory to [directory].
+    e.g.    cd /home
+    This command also change the PWD environment variable (use the command "pwd" to see it).
+    As to the directory path, type "help path" to get more information.
+    If the [directory] argument is not present, report the current directory.
+    If the directory does not exist, a "Path Error" wil be reported in the screen.
+    Moreover, you can use a directory path writen in a file as:
+    e.g.    cd < test.txt
+    The file can be given by the full path as:
+            cd < /home/username/test.txt
+    As to the file path format, type "help path" to get more information.
+#
+
+
+<help clr> <help clear>
+
+Format:    clr
+or          clear
+-> clear the screen, no arguments is needed.
+#
+
+
+<help dir>
+Format:    dir [directory]
+-> list the contents of directory [directory]
+    e.g.    dir  /home
+    This command  is different from "cd", it change neither the current default directory nor the PWD environment variable(use the command "pwd" to see it).
+    As to the directory path, type "help path" to get more information.
+    If the [directory] argument is not present, list the contents of the current directory. If the directory does not exist, a "Path Error" wil be reported in the screen.
+
+    Moreover, you can use a directory path written in a file as:
+    e.g.    dir < a.txt
+    And you can list the contents into a file or more than one file as:
+    e.g.    dir > b.txt     or   dir > b.txt > c.txt
+    The token ">" can be replaced by ">>", type "help redirection" to see the difference of ">" and ">>".
+    You can use both input redirection and output redirection as:
+    e.g.    dir < a.txt > b.txt > c.txt
+    The file can be given by the full path as:
+            dir < /home/username/a.txt
+    As to the file path format, type "help path" to get more information.
+#
+
+
+<help environ>
+Format:    environ
+-> list all the environment strings in screen or into one file or more than one file as:
+    e.g.    envieron      or    environ > b.txt     or    environ > b.txt > c.txt
+    The token ">" can be replaced by ">>", type "help redirection" to see the difference of ">" and ">>".
+    The file can be given by the full path as:
+            /home/a.txt
+    As to the file path format, type "help path" to get more information.
+#
+
+
+<help echo>
+Format:    echo [comment]
+-> display [comment] on the display or output files followed by a new line. And multiple spaces/tabs will be reduced to a single space.
+    e.g.    echo hello    world
+    The words "hello world" will display in the screen.
+    [comment] can be multiple words either typed from keyboard or read from one or more input files.
+    e.g.    echo < a.txt    or   echo < a.txt < b.txt
+    And you can display or output the contents into one file or more than one file:
+    e.g.    echo hello world > c.txt  or  echo hello world > c.txt > d.txt
+    The token ">" can be replaced by ">>", type "help redirection" to see the difference of ">" and ">>".
+    You can use both input redirection and output redirection:
+    e.g.    echo < a.txt < b.txt > c.txt > d.txt
+    The file can be given by the full path as:
+            echo < /home/a.txt  > /home/b.txt
+    As to the file path format, type "help path" to get more information.
+#
+
+
+<help help>
+Format:    help    or    ?
+-> display the user manual. Type "help [command]" to get the detail usage of a command as:
+    e.g.     help dir    or    ? dir
+    Type "help command" to see the internal commands.
+    And you can display  or output the help information into one file or more than one file as:
+    e.g.     help dir > c.txt      or    help dir > c.txt > d.txt
+    The token ">" can be replaced by ">>", type "help redirection" to see the difference of ">" and ">>".
+    The file can be given by the full path as:
+             help dir > /home/a.txt
+    As to the file path format, type "help path" to get more information.
+#
+
+
+<help myshell>
+Format:      myshell batchfile
+or           myshell < batchfile
+-> keep reading a line of command from batchfile and execute.
+    e.g.      myshell test.bat    or    myshell < test.bat
+    where test.bat is a batchfile contains many lines of commands.
+    You can display or output the execution results into one file or more than one file as:
+    e.g.      myshell test.bat > c.txt      or    myshell test.bat > c.txt > d.txt
+    The token ">" can be replaced by ">>", type "help redirection" to see the difference of ">" and ">>".
+    The file can be given by the full path as:
+    e.g.      myshell < /home/a.txt > /home/username/b.txt
+    As to the file path format, type "help path" to get more information. then put results in outputfile.
+#
+
+
+<help pause>
+Format:      pause
+-> display "Press Enter to continue..." and pause operation of the shell until the 'Enter' key is pressed (ignore any intervening non-'Enter' input).
+#
+
+
+<help pwd>
+Format:      pwd
+-> show the PWD environment variable. If you want to list all the environment strings, use command "environ", type "help environ" to see.
+    You can display or output the execution results into one file or more than one file as:
+    e.g.      pwd test.bat > c.txt      or    pwd test.bat > c.txt > d.txt
+    The token ">" can be replaced by ">>", type "help redirection" to see the difference of ">" and ">>".
+    The file can be given by the full path as:
+    e.g.      pwd > /home/a.txt
+    As to the file path format, type "help path" to get more information. then put results in outputfile.
+#
+
+
+<help quit>    <help exit>
+Format:    quit     or    exit
+-> Exit myshell, no argument is needed.
+#
+
+
+
+********************************************************************************
+                           Directory path and File path 
+********************************************************************************
+
+<help path>    <help ..>    <help .>    <help ~>
+
+.. . and ~ can be used in pathnames.
+.. stands for the parent directory of the current working directory,
+.  stands for the current working directory,
+~  stands for the home directory.
+If the filename or directoryname contains a white space, type "\ " :
+  e.g.    echo < a\ b (display the contents of file "a b")
+Besides, there cannot be a white space in the path, or else a "Path Error" wil be reported in the screen.
+#
+
+<help redirection>
+This is where you would put content about > and >>.
+#
+
